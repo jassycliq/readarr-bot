@@ -1,6 +1,7 @@
 package com.jassycliq.readarr.bot
 
 import com.jassycliq.readarr.bot.data.SearchRequestItem
+import dev.kord.core.Kord
 import dev.kord.core.behavior.interaction.response.respond
 import dev.kord.core.event.interaction.ChatInputCommandInteractionCreateEvent
 import dev.kord.core.on
@@ -13,16 +14,16 @@ import org.koin.core.annotation.Singleton
 import org.koin.core.component.KoinComponent
 
 @Singleton
-internal class BotCommands constructor(
-    private val bot: Bot,
+internal class Commands constructor(
+    private val kord: Kord,
     private val readarrService: ReadarrService,
 ) : KoinComponent {
     suspend fun login(builder: LoginBuilder.() -> Unit = {}) {
-        bot().login(builder)
+        kord.login(builder)
     }
 
-    suspend fun registerSlashCommands(): BotCommands = apply {
-        bot().createGlobalChatInputCommand(
+    suspend fun registerSlashCommands(): Commands = apply {
+        kord.createGlobalChatInputCommand(
             name = "search",
             description = "Command used to search for and add a specific book",
         ) {
@@ -39,8 +40,8 @@ internal class BotCommands constructor(
         }
     }
 
-    suspend fun listenToSlashCommands(): BotCommands = apply {
-        bot().on<ChatInputCommandInteractionCreateEvent> {
+    suspend fun listenToSlashCommands(): Commands = apply {
+        kord.on<ChatInputCommandInteractionCreateEvent> {
             val response = interaction.deferEphemeralResponse()
             val command = interaction.command
             val name = command.strings["name"]

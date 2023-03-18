@@ -1,14 +1,17 @@
 @file:OptIn(ExperimentalSerializationApi::class)
 
-package com.jassycliq.readarr.bot
+package com.jassycliq.readarr.bot.di
 
+import com.jassycliq.readarr.bot.ReadarrApi
 import de.jensklingenberg.ktorfit.Ktorfit
+import dev.kord.core.Kord
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.api.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.koin.core.annotation.Module
@@ -16,7 +19,12 @@ import org.koin.core.annotation.Property
 import org.koin.core.annotation.Singleton
 
 @Module
-class Network {
+class ExternalLibraries {
+
+    @Singleton
+    fun providesKord(@Property("READARR_BOT_DISCORD_TOKEN") discordToken: String): Kord {
+        return runBlocking { Kord(discordToken) }
+    }
 
     @Singleton
     fun providesReadarrAuthPlugin(
